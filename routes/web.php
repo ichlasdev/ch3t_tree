@@ -13,15 +13,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-
-Route::group(['middleware' => 'auth'], function() {
-    Route::get('/', 'ChatController@index');
-    Route::get('/messages', 'ChatController@getMessages');
-    Route::post('/messages', 'ChatController@broadcastMessage');
+Route::get('/', function () {
+    return view('welcome');
 });
+
+// Route::group(['middleware' => 'auth'], function() {
+//     Route::get('/', 'ChatController@index');
+//     Route::get('/messages', 'ChatController@getMessages');
+//     Route::post('/messages', 'ChatController@broadcastMessage');
+// });
 
 Route::get('/login', 'TestController@login');
 Route::get('/register', 'TestController@register');
