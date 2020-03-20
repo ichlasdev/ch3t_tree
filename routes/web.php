@@ -17,12 +17,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::group(['middleware' => 'auth'], function() {
-//     Route::get('/', 'ChatController@index');
-//     Route::get('/messages', 'ChatController@getMessages');
-//     Route::post('/messages', 'ChatController@broadcastMessage');
-// });
+Route::group(['middleware' => 'auth'], function() {
+    Route::get('/chat', 'ChatController@index');
+    Route::get('/messages', 'ChatController@getMessages');
+    Route::post('/messages', 'ChatController@broadcastMessage');
+});
 
-Route::get('/login', 'TestController@login');
+Route::get('/login', 'TestController@login')->name('login');
 Route::get('/register', 'TestController@register');
 Route::get('/sukses', 'TestController@sukses');
