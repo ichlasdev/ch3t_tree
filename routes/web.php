@@ -24,5 +24,5 @@ Route::group(['middleware' => 'auth'], function() {
 });
 
 Route::get('/login', 'TestController@login')->name('login');
-Route::get('/register', 'TestController@register');
+Route::get('/register', 'TestController@register')->name('register');
 Route::get('/sukses', 'TestController@sukses');
