@@ -35,6 +35,11 @@
                     <span class="focus-input100"></span>
                 </div>
 
+                <div class="form-group">
+                    <label for="exampleFormControlTextarea1">Avatar</label>
+                    <input type="file" name="avatar" class="form-control">
+                </div>
+
                 <div class="flex-sb-m w-full p-t-3 p-b-24">
                     <div>
                         <a href="/login" class="txt1">
