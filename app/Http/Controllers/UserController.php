@@ -159,7 +159,7 @@ class UserController extends Controller
         $data = collect($user);
         $sent = $data->except('id', 'updated_at', 'created_at', 'email_verified_at');
 
-        return response()->json(compact($sent));
+        return response()->json($sent);
         // return redirect('/login');
     }
 
