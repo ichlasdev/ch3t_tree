@@ -25,44 +25,6 @@ class UserController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $data = User::create($request->all());
-        if(! $data){
-        return response([
-            'status'=>'gagal'
-        ], Response::HTTP_BAD_REQUEST);
-    }
-    return response(new UserResource($data), response::HTTP_CREATED);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
@@ -130,7 +92,8 @@ class UserController extends Controller
             return response()->json(['error' => 'could_not_create_token'], 500);
         }
 
-        return response()->json(compact('token'));
+        // return response()->json(compact('token'));
+        return redirect('/sukses');
         // return redirect('/sukses');
     }
 
@@ -138,6 +101,7 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
+            'avatar' => 'string|max:255|unique:users',
             'phone' => 'required|string|max:255|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:5|confirmed',
@@ -149,6 +113,7 @@ class UserController extends Controller
 
         $user = User::create([
             'name' => $request->get('name'),
+            'avatar' => $request->get('name'),
             'phone' => $request->get('phone'),
             'email' => $request->get('email'),
             'password' => Hash::make($request->get('password')),
