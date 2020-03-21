@@ -15,8 +15,9 @@ class TestController extends Controller
     {
         return view('forms.register');
     }
-    
-    public function sukses(){
+
+    public function sukses()
+    {
         return view('forms.sukses');
     }
 }

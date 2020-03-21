@@ -92,8 +92,9 @@ class UserController extends Controller
             return response()->json(['error' => 'could_not_create_token'], 500);
         }
 
-        // return response()->json(compact('token'));
-        return redirect('/sukses');
+        $user = JwTAuth::fromUser($token);
+
+        return response()->json(compact('token', $user));
         // return redirect('/sukses');
     }
 
@@ -113,7 +114,7 @@ class UserController extends Controller
 
         $user = User::create([
             'name' => $request->get('name'),
-            'avatar' => $request->get('name'),
+            'avatar' => $request->get('avatar'),
             'phone' => $request->get('phone'),
             'email' => $request->get('email'),
             'password' => Hash::make($request->get('password')),
