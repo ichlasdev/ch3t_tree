@@ -36,7 +36,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="exampleFormControlTextarea1">Avatar</label>
+                    <label for="exampleFormControlTextarea1"></label>
                     <input type="file" name="avatar" class="form-control">
                 </div>
 
