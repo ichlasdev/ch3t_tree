@@ -25,6 +25,7 @@ Route::get('/book', 'BookController@book');
 Route::group(['middleware' => 'jwt.verify'], function () {
     Route::get('/bookall', 'BookController@bookAuth');
     Route::get('/user', 'UserController@getAuthenticatedUser');
+    Route::post('/logout', 'UserController@logout');
 
     // Route::get('/show','UserController@index');
     // Route::post('/store','UserController@store');
