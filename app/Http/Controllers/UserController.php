@@ -100,7 +100,6 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'avatar' => 'string|max:255|unique:users',
             'phone' => 'required|string|max:255|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:5|confirmed',
@@ -112,7 +111,6 @@ class UserController extends Controller
 
         $user = User::create([
             'name' => $request->get('name'),
-            'avatar' => $request->get('avatar'),
             'phone' => $request->get('phone'),
             'email' => $request->get('email'),
             'password' => Hash::make($request->get('password')),
