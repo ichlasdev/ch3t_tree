@@ -99,10 +99,10 @@ class UserController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|min:5|max:255',
             'avatar' => 'string|image|mimes:jpg,png,jpeg|max:5120',
-            'phone' => 'required|string|max:255|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
+            'phone' => 'required|string|min:8|max:15|unique:users',
+            'email' => 'required|string|email|min:8|max:50|unique:users',
             'password' => 'required|string|min:5|confirmed',
         ]);
 
@@ -110,12 +110,19 @@ class UserController extends Controller
             return response()->json($validator->errors()->toJson(), 400);
         }
 
+        if($request->hasFile('avatar')){
+            $request->file('avatar')->move('images/avatars/',$request->file('avatar')->getClientOriginalName());
+            $avatar = $request->get(file('avatar')->getClientOriginalName());
+        }elseif( $request->get('avatar') == null ){
+            $avatar = file('images/avatars/default.png');
+        }
+
         $user = User::create([
             'name' => $request->get('name'),
-            'avatar'=> $request->get('avatar'),
             'phone' => $request->get('phone'),
             'email' => $request->get('email'),
             'password' => Hash::make($request->get('password')),
+            'avatar' => $avatar,
         ]);
 
         $token = JwTAuth::fromUser($user);
@@ -124,7 +131,6 @@ class UserController extends Controller
         $sent = $data->except('id', 'updated_at', 'created_at', 'email_verified_at');
 
         return response()->json($sent);
-        // return redirect('/login');
     }
 
     public function getAuthenticatedUser()
