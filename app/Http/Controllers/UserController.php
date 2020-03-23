@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -100,7 +101,7 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:5|max:255',
-            'avatar' => 'string|image|mimes:jpg,png,jpeg|max:5120',
+            'avatar' => 'image|mimes:jpg,png,jpeg|max:5120',
             'phone' => 'required|string|min:8|max:15|unique:users',
             'email' => 'required|string|email|min:8|max:50|unique:users',
             'password' => 'required|string|min:5|confirmed',
@@ -111,8 +112,8 @@ class UserController extends Controller
         }
 
         if($request->hasFile('avatar')){
-            $request->file('avatar')->move('images/avatars/',$request->file('avatar')->getClientOriginalName());
-            $avatar = $request->get(file('avatar')->getClientOriginalName());
+            $avatar = Str::random(3).$request->file('avatar')->getClientOriginalName();
+            $request->file('avatar')->move('images/avatars/',$avatar);
         }elseif( $request->get('avatar') == null ){
             $avatar = file('images/avatars/default.png');
         }

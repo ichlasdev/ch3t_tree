@@ -5,7 +5,7 @@
 <div class="limiter">
     <div class="container-login100">
         <div class="wrap-login100 p-t-50 p-b-90">
-            <form class="login100-form validate-form flex-sb flex-w" action="/api/register" method="POST">
+            <form class="login100-form validate-form flex-sb flex-w" action="/api/register" method="POST" enctype="multipart/form-data">
                 <span class="login100-form-title p-b-51">
                     Register
                 </span>
@@ -37,7 +37,7 @@
 
                 <div class="form-group">
                     <label for="exampleFormControlTextarea1"></label>
-                    <input type="file" name="avatar" class="form-control">
+                    <input type="file" name="avatar" id="avatar" class="form-control">
                 </div>
 
                 <div class="flex-sb-m w-full p-t-3 p-b-24">
