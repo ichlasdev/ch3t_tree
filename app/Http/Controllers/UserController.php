@@ -11,68 +11,68 @@ use Illuminate\Support\Facades\Validator;
 use JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Notifications\Notifiable;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+
+    public function allUsers()
     {
         $data = User::all();
         return UserResource::collection($data);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request)
     {
-        $this->validation($request, [
-            'password' => 'required|confirmed'
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|min:5|max:255',
+            'avatar' => 'image|mimes:jpg,png,jpeg',
+            'phone' => 'required|string|min:8|max:15|unique:users',
+            'email' => 'required|string|email|min:8|max:50|unique:users',
+            'password' => 'required|string|min:5|confirmed',
         ]);
 
-        $userid = Auth::id();
-        $data = User::findOrFail($userid);
-
-        $data->name = $request->get('name');
-        $data->phone = $request->get('phone');
-        $data->email = $request->get('email');
-        $data->password = $request->only('password');
-        $data->password = Hash::make($request->get('password'));
-        $data->safe();
-
-        if(! $data->save() ){
-            return response()->json(['message', 'Register did not successful! haha!']);
+        if($validator->fails()){
+            return response()->json($validator->errors()->toJson(), 400);
         }
-        $data->update($request->all());
 
-        return response(new UserResource($data), response::HTTP_OK);
+        if($request->hasFile('avatar')){
+            if($request->get('avatar') != Auth::avatar()){
+            $avatar = Str::random(3).$request->file('avatar')->getClientOriginalName();
+            $request->file('avatar')->move('images/avatars/',$avatar);
+            }
+        }elseif( $request->get('avatar') == null ){
+            $avatar = file('images/avatars/default.png');
+        }
+
+        $user = User::findOrFail(Auth::id());
+        if($request->hasFile('avatar')){
+            $request->file('avatar')->move('images/avatars/',Str::random(3).$request->file('avatar')->getClientOriginalName());
+            $user->update([
+                'name' => $request->get('name'),
+                'phone' => $request->get('phone'),
+                'email' => $request->get('email'),
+                'password' => Hash::make($request->get('password')),
+                'avatar' => Str::random(3).$request->file('avatar')->getClientOriginalName(),
+            ]);
+        }elseif( $request->get('avatar') == null ){
+            $user->update([
+                'name' => $request->get('name'),
+                'phone' => $request->get('phone'),
+                'email' => $request->get('email'),
+                'password' => Hash::make($request->get('password')),
+                ]);
+        }
+
+        $token = JwTAuth::fromUser($user);
+
+        $data = collect($user);
+        $sent = $data->except('id', 'updated_at', 'created_at', 'email_verified_at');
+
+        return response()->json($sent, $token);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $data = User::findOrFail($id);
@@ -94,7 +94,6 @@ class UserController extends Controller
         }
 
         return response()->json(compact('token'));
-        // return redirect('/sukses');
     }
 
     public function register(Request $request)
@@ -112,21 +111,22 @@ class UserController extends Controller
         }
 
         if($request->hasFile('avatar')){
-            $avatar = Str::random(3).$request->file('avatar')->getClientOriginalName();
-            $request->file('avatar')->move('images/avatars/',$avatar);
+            $request->file('avatar')->move('images/avatars/',Str::random(3).$request->file('avatar')->getClientOriginalName());
+            $user = User::create([
+                'name' => $request->get('name'),
+                'phone' => $request->get('phone'),
+                'email' => $request->get('email'),
+                'password' => Hash::make($request->get('password')),
+                'avatar' => Str::random(3).$request->file('avatar')->getClientOriginalName(),
+            ]);
         }elseif( $request->get('avatar') == null ){
-            $avatar = file('images/avatars/default.png');
+            $user = User::create([
+                'name' => $request->get('name'),
+                'phone' => $request->get('phone'),
+                'email' => $request->get('email'),
+                'password' => Hash::make($request->get('password')),
+                ]);
         }
-
-        $user = User::create([
-            'name' => $request->get('name'),
-            'phone' => $request->get('phone'),
-            'email' => $request->get('email'),
-            'password' => Hash::make($request->get('password')),
-            'avatar' => $avatar,
-        ]);
-
-        $token = JwTAuth::fromUser($user);
 
         $data = collect($user);
         $sent = $data->except('id', 'updated_at', 'created_at', 'email_verified_at');

@@ -16,6 +16,11 @@ class TestController extends Controller
         return view('forms.register');
     }
 
+    public function update(Request $request)
+    {
+        return view('forms.update');
+    }
+
     public function sukses()
     {
         return view('forms.sukses');
