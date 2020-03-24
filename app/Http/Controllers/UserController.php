@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use App\Http\Controllers\Cookie;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -154,14 +155,17 @@ class UserController extends Controller
         return response()->json(compact('sent'));
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
-        $this->validate($request, [
-            'token' => 'required'
-        ]);
-
         try {
-            JWTAuth::invalidate($request->token);
+            config([
+                'jwt.blacklist_enabled' =>  true
+            ]);
+
+            \Cookie::forget('token');
+            \Cache::forget('token');
+            Auth()->logout();
+            JWTAuth::invalidate(JWTAuth::parseToken());
 
             return response()->json([
                 'success' => true,

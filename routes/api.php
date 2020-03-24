@@ -27,6 +27,7 @@ Route::group(['middleware' => 'jwt.verify'], function () {
     Route::get('/user', 'UserController@getAuthenticatedUser');
     Route::post('/logout', 'UserController@logout');
     Route::get('/alluser', 'UserController@allUsers');
+    Route::post('/logout', 'UserController@logout');
     Route::delete('/delete/{id}','UserController@destroy');
     Route::put('/update','UserController@update');
 });
