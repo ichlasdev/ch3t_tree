@@ -79,7 +79,7 @@ class UserController extends Controller
         $data = User::findOrFail($id);
         $data->delete();
 
-        return redirect('/api/show');
+        return redirect('/api/bookall');
     }
 
     public function login(Request $request)

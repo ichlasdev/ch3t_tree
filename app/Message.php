@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Message extends Model
 {
-    protected $fillable = ['message'];
+    protected $fillable = [
+        'content', 'is_read', 'from_id', 'to_id'
+    ];
 
-    public function user()
+    public function contact()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Contact::class);
     }
 }

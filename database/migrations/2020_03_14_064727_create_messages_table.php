@@ -18,9 +18,8 @@ class CreateMessagesTable extends Migration
             $table->unsignedBigInteger('from_id');
             $table->foreign('from_id')->references('id')->on('users')->onDelete('cascade');
             $table->bigInteger('to_id');
-            $table->foreign('to_id')->references('id')->on('users')->onDelete('cascade');
             $table->text('content');
-            $table->boolean('is_read');
+            $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
     }
