@@ -32,11 +32,20 @@ class UserController extends Controller
             'phone' => 'required|string|min:8|max:15|unique:users',
             'email' => 'required|string|email|min:8|max:50|unique:users',
             'password' => 'required|string|min:5|confirmed',
+            'gender' => 'required|string',
         ]);
 
         if($validator->fails()){
             return response()->json($validator->errors()->toJson(), 400);
         }
+
+        // $gender = $request->get('gender');
+
+        // if( $gender == 'Cowokzs' ){
+        //     $gender = 'M';
+        // }elseif( $gender == 'Cewekzs' ){
+        //     $gender = 'L';
+        // }
 
         if($request->hasFile('avatar')){
             if($request->get('avatar') != Auth::avatar()){
@@ -54,6 +63,7 @@ class UserController extends Controller
                 'name' => $request->get('name'),
                 'phone' => $request->get('phone'),
                 'email' => $request->get('email'),
+                'gender' => $request->get('gender'),
                 'password' => Hash::make($request->get('password')),
                 'avatar' => Str::random(3).$request->file('avatar')->getClientOriginalName(),
             ]);
@@ -62,6 +72,7 @@ class UserController extends Controller
                 'name' => $request->get('name'),
                 'phone' => $request->get('phone'),
                 'email' => $request->get('email'),
+                'gender' => $request->get('gender'),
                 'password' => Hash::make($request->get('password')),
                 ]);
         }
@@ -112,13 +123,13 @@ class UserController extends Controller
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        $gender = $request->get('gender');
+        // $gender = $request->get('gender');
 
-        if( $gender == 'Cowokzs' ){
-            $gender = 'M';
-        }elseif( $gender == 'Cewekzs' ){
-            $gender = 'L';
-        }
+        // if( $gender == 'Cowokzs' ){
+        //     $gender = 'M';
+        // }elseif( $gender == 'Cewekzs' ){
+        //     $gender = 'L';
+        // }
 
         if($request->hasFile('avatar')){
             $request->file('avatar')->move('images/avatars/',Str::random(3).$request->file('avatar')->getClientOriginalName());
@@ -126,7 +137,7 @@ class UserController extends Controller
                 'name' => $request->get('name'),
                 'phone' => $request->get('phone'),
                 'email' => $request->get('email'),
-                'gender' => $gender,
+                'gender' => $request->get('gender'),
                 'password' => Hash::make($request->get('password')),
                 'avatar' => Str::random(3).$request->file('avatar')->getClientOriginalName(),
             ]);
@@ -135,7 +146,7 @@ class UserController extends Controller
                 'name' => $request->get('name'),
                 'phone' => $request->get('phone'),
                 'email' => $request->get('email'),
-                'gender' => $gender,
+                'gender' => $request->get('gender'),
                 'password' => Hash::make($request->get('password')),
                 ]);
         }
