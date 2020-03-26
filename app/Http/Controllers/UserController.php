@@ -47,25 +47,19 @@ class UserController extends Controller
         //     $gender = 'L';
         // }
 
-        if($request->hasFile('avatar')){
-            if($request->get('avatar') != Auth::avatar()){
-            $avatar = Str::random(3).$request->file('avatar')->getClientOriginalName();
-            $request->file('avatar')->move('images/avatars/',$avatar);
-            }
-        }elseif( $request->get('avatar') == null ){
-            $avatar = file('images/avatars/default.png');
-        }
-
         $user = User::findOrFail(Auth::id());
         if($request->hasFile('avatar')){
-            $request->file('avatar')->move('images/avatars/',Str::random(3).$request->file('avatar')->getClientOriginalName());
+            if($request->get('avatar') != Auth::avatar()){
+                $avatar = Str::random(3).$request->file('avatar')->getClientOriginalName();
+                $request->file('avatar')->move('images/avatars/',$avatar);
+            }
             $user->update([
                 'name' => $request->get('name'),
                 'phone' => $request->get('phone'),
                 'email' => $request->get('email'),
                 'gender' => $request->get('gender'),
                 'password' => Hash::make($request->get('password')),
-                'avatar' => Str::random(3).$request->file('avatar')->getClientOriginalName(),
+                'avatar' => $avatar,
             ]);
         }elseif( $request->get('avatar') == null ){
             $user->update([
@@ -132,14 +126,18 @@ class UserController extends Controller
         // }
 
         if($request->hasFile('avatar')){
-            $request->file('avatar')->move('images/avatars/',Str::random(3).$request->file('avatar')->getClientOriginalName());
+            $avatar = Str::random(3).$request->file('avatar')->getClientOriginalName();
+            $request->file('avatar')->move('images/avatars/',$avatar);
+        }
+
+        if($request->hasFile('avatar')){
             $user = User::create([
                 'name' => $request->get('name'),
                 'phone' => $request->get('phone'),
                 'email' => $request->get('email'),
                 'gender' => $request->get('gender'),
                 'password' => Hash::make($request->get('password')),
-                'avatar' => Str::random(3).$request->file('avatar')->getClientOriginalName(),
+                'avatar' => $avatar,
             ]);
         }elseif( $request->get('avatar') == null ){
             $user = User::create([
