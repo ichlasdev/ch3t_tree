@@ -105,6 +105,7 @@ class UserController extends Controller
             'phone' => 'required|string|min:8|max:15|unique:users',
             'email' => 'required|string|email|min:8|max:50|unique:users',
             'password' => 'required|string|min:5|confirmed',
+            'gender' => 'required|string',
         ]);
 
         if($validator->fails()){
@@ -117,6 +118,7 @@ class UserController extends Controller
                 'name' => $request->get('name'),
                 'phone' => $request->get('phone'),
                 'email' => $request->get('email'),
+                'gender' => $gender,
                 'password' => Hash::make($request->get('password')),
                 'avatar' => Str::random(3).$request->file('avatar')->getClientOriginalName(),
             ]);
@@ -125,6 +127,7 @@ class UserController extends Controller
                 'name' => $request->get('name'),
                 'phone' => $request->get('phone'),
                 'email' => $request->get('email'),
+                'gender' => $gender,
                 'password' => Hash::make($request->get('password')),
                 ]);
         }
