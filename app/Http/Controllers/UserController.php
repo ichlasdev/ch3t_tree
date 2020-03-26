@@ -128,9 +128,6 @@ class UserController extends Controller
         if($request->hasFile('avatar')){
             $avatar = Str::random(3).$request->file('avatar')->getClientOriginalName();
             $request->file('avatar')->move('images/avatars/',$avatar);
-        }
-
-        if($request->hasFile('avatar')){
             $user = User::create([
                 'name' => $request->get('name'),
                 'phone' => $request->get('phone'),
