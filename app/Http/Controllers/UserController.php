@@ -112,6 +112,14 @@ class UserController extends Controller
             return response()->json($validator->errors()->toJson(), 400);
         }
 
+        $gender = $request->get('gender');
+
+        if( $gender == 'Cowokzs' ){
+            $gender = 'M';
+        }elseif( $gender == 'Cewekzs' ){
+            $gender = 'L';
+        }
+
         if($request->hasFile('avatar')){
             $request->file('avatar')->move('images/avatars/',Str::random(3).$request->file('avatar')->getClientOriginalName());
             $user = User::create([
