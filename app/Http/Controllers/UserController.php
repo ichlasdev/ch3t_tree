@@ -14,6 +14,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -49,17 +50,16 @@ class UserController extends Controller
 
         $user = User::findOrFail(Auth::id());
         if($request->hasFile('avatar')){
-            if($request->get('avatar') != Auth::avatar()){
-                $avatar = Str::random(3).$request->file('avatar')->getClientOriginalName();
-                $request->file('avatar')->move('images/avatars/',$avatar);
-            }
+            Storage::delete(Auth::avatar());
+            $avatar = $request->file('avatar')->store('avatars');
+
             $user->update([
                 'name' => $request->get('name'),
                 'phone' => $request->get('phone'),
                 'email' => $request->get('email'),
                 'gender' => $request->get('gender'),
                 'password' => Hash::make($request->get('password')),
-                'avatar' => $avatar,
+                'avatar' => 'storage/'.$avatar,
             ]);
         }elseif( $request->get('avatar') == null ){
             $user->update([
@@ -84,7 +84,7 @@ class UserController extends Controller
         $data = User::findOrFail($id);
         $data->delete();
 
-        return redirect('/api/bookall');
+        return redirect('/');
     }
 
     public function login(Request $request)
@@ -126,15 +126,15 @@ class UserController extends Controller
         // }
 
         if($request->hasFile('avatar')){
-            $avatar = Str::random(3).$request->file('avatar')->getClientOriginalName();
-            $request->file('avatar')->move('images/avatars/',$avatar);
+            $avatar = $request->file('avatar')->store('avatars');
+
             $user = User::create([
                 'name' => $request->get('name'),
                 'phone' => $request->get('phone'),
                 'email' => $request->get('email'),
                 'gender' => $request->get('gender'),
                 'password' => Hash::make($request->get('password')),
-                'avatar' => $avatar,
+                'avatar' => 'storage/'.$avatar,
             ]);
         }elseif( $request->get('avatar') == null ){
             $user = User::create([
