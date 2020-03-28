@@ -14,6 +14,7 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
@@ -30,7 +31,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:5|max:255',
             'avatar' => 'image|mimes:jpg,png,jpeg',
-            'phone' => 'required|string|min:8|max:15|unique:users',
+            'phone' => 'required|numeric|min:8|max:15|unique:users',
             'email' => 'required|string|email|min:8|max:50|unique:users',
             'password' => 'required|string|min:5|confirmed',
             'gender' => 'required|string',
@@ -107,7 +108,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:5|max:255',
             'avatar' => 'image|mimes:jpg,png,jpeg|max:5120',
-            'phone' => 'required|string|min:8|max:15|unique:users',
+            'phone' => 'required|numeric|min:8|max:15|unique:users',
             'email' => 'required|string|email|min:8|max:50|unique:users',
             'password' => 'required|string|min:5|confirmed',
             'gender' => 'required|string',
@@ -194,6 +195,17 @@ class UserController extends Controller
                 'message' => 'Anu~~ Usernya gak bisa logout itu...'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public function search(Request $request)
+    {
+        $cari = $request->get('cari');
+
+        $user = DB::table('users')
+        ->where('name','like',"%".$cari."%")
+        ->get(['name', 'avatar']);
+
+        return response()->json(compact('user'));
     }
 
 }
