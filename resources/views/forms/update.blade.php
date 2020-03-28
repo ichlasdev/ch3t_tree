@@ -35,6 +35,14 @@
                     <span class="focus-input100"></span>
                 </div>
 
+                <div class="wrap-input100 validate-input m-b-16" data-validate = "Ini juga harus diisi">
+                    <select class="input100" id="gender" name="gender">
+                        <option id="M">M</option>
+                        <option id="F">F</option>
+                    </select>
+                    <span class="focus-input100"></span>
+                </div>
+
                 <div class="form-group">
                     <label for="exampleFormControlTextarea1"></label>
                     <input type="file" name="avatar" id="avatar" class="form-control">

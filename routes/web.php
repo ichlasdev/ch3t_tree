@@ -26,3 +26,4 @@ Route::get('/', function () {
 Route::get('/login', 'TestController@login')->name('login');
 Route::get('/register', 'TestController@register')->name('register');
 Route::get('/sukses', 'TestController@sukses');
+Route::get('/update', 'TestController@update');

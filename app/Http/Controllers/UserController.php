@@ -31,8 +31,8 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:5|max:255',
             'avatar' => 'image|mimes:jpg,png,jpeg',
-            'phone' => 'required|numeric|min:8|max:15|unique:users',
-            'email' => 'required|string|email|min:8|max:50|unique:users',
+            'phone' => 'required|string|min:8|max:15',
+            'email' => 'required|string|email|min:8|max:50',
             'password' => 'required|string|min:5|confirmed',
             'gender' => 'required|string',
         ]);
@@ -40,14 +40,6 @@ class UserController extends Controller
         if($validator->fails()){
             return response()->json($validator->errors()->toJson(), 400);
         }
-
-        // $gender = $request->get('gender');
-
-        // if( $gender == 'Cowokzs' ){
-        //     $gender = 'M';
-        // }elseif( $gender == 'Cewekzs' ){
-        //     $gender = 'L';
-        // }
 
         $user = User::findOrFail(Auth::id());
         if($request->hasFile('avatar')){
@@ -72,12 +64,10 @@ class UserController extends Controller
                 ]);
         }
 
-        $token = JwTAuth::fromUser($user);
-
         $data = collect($user);
         $sent = $data->except('id', 'updated_at', 'created_at', 'email_verified_at');
 
-        return response()->json($sent, $token);
+        return response()->json(['data' => $sent], Response::HTTP_ACCEPTED);
     }
 
     public function destroy($id)
