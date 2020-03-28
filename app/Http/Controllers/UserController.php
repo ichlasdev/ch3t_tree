@@ -98,7 +98,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:5|max:255',
             'avatar' => 'image|mimes:jpg,png,jpeg|max:5120',
-            'phone' => 'required|numeric|min:8|max:15|unique:users',
+            'phone' => 'required|string|min:8|max:15|unique:users',
             'email' => 'required|string|email|min:8|max:50|unique:users',
             'password' => 'required|string|min:5|confirmed',
             'gender' => 'required|string',
@@ -132,7 +132,7 @@ class UserController extends Controller
         $data = collect($user);
         $sent = $data->except('id', 'updated_at', 'created_at', 'email_verified_at');
 
-        return response()->json($sent);
+        return response()->json($sent, 201);
     }
 
     public function getAuthenticatedUser()
@@ -181,13 +181,25 @@ class UserController extends Controller
 
     public function search(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'cari' => 'required|string',
+        ]);
+
+        if($validator->fails()){
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
         $cari = $request->get('cari');
 
         $user = DB::table('users')
         ->where('name','like',"%".$cari."%")
-        ->get(['name', 'avatar']);
+        ->first(['name', 'avatar']);
 
-        return response()->json(compact('user'));
+        if( $user == null ){
+            return response(['msg' => 'not found'], 204);
+        }
+
+        return response()->json($user, 302);
     }
 
 }
