@@ -108,14 +108,6 @@ class UserController extends Controller
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        // $gender = $request->get('gender');
-
-        // if( $gender == 'Cowokzs' ){
-        //     $gender = 'M';
-        // }elseif( $gender == 'Cewekzs' ){
-        //     $gender = 'L';
-        // }
-
         if($request->hasFile('avatar')){
             $avatar = $request->file('avatar')->store('avatars');
 
