@@ -26,6 +26,49 @@ class UserController extends Controller
         return UserResource::collection($data);
     }
 
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|min:5|max:255',
+            'avatar' => 'image|mimes:jpg,png,jpeg|max:4096',
+            'phone' => 'required|string|min:8|max:15|unique:users',
+            'email' => 'required|string|email|min:8|max:50|unique:users',
+            'password' => 'required|string|min:5|confirmed',
+            'gender' => 'required|string',
+        ]);
+
+        if($validator->fails()){
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+        if($request->hasFile('avatar')){
+            if($request->file('avatar')->isValid()){
+                $avatar = base64_encode(file_get_contents($request->file('avatar')));
+                $user = User::create([
+                    'name' => $request->get('name'),
+                    'phone' => $request->get('phone'),
+                    'email' => $request->get('email'),
+                    'gender' => $request->get('gender'),
+                    'password' => Hash::make($request->get('password')),
+                    'avatar' => $avatar,
+                ]);
+            }
+        }elseif( $request->file('avatar') == null ){
+            $user = User::create([
+                'name' => $request->get('name'),
+                'phone' => $request->get('phone'),
+                'email' => $request->get('email'),
+                'gender' => $request->get('gender'),
+                'password' => Hash::make($request->get('password')),
+                ]);
+        }
+
+        $data = collect($user);
+        $sent = $data->except('id', 'updated_at', 'created_at', 'email_verified_at');
+
+        return response()->json($sent, 201);
+    }
+
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -43,17 +86,17 @@ class UserController extends Controller
 
         $user = User::findOrFail(Auth::id());
         if($request->hasFile('avatar')){
-            Storage::delete(Auth::avatar());
-            $avatar = $request->file('avatar')->store('avatars');
-
-            $user->update([
-                'name' => $request->get('name'),
-                'phone' => $request->get('phone'),
-                'email' => $request->get('email'),
-                'gender' => $request->get('gender'),
-                'password' => Hash::make($request->get('password')),
-                'avatar' => 'storage/'.$avatar,
-            ]);
+            if($request->file('avatar')->isValid()){
+                $avatar = base64_encode(file_get_contents($request->file('avatar')));
+                $user->update([
+                    'name' => $request->get('name'),
+                    'phone' => $request->get('phone'),
+                    'email' => $request->get('email'),
+                    'gender' => $request->get('gender'),
+                    'password' => Hash::make($request->get('password')),
+                    'avatar' => $avatar,
+                ]);
+            }
         }elseif( $request->get('avatar') == null ){
             $user->update([
                 'name' => $request->get('name'),
@@ -91,48 +134,6 @@ class UserController extends Controller
         }
 
         return response()->json(compact('token'));
-    }
-
-    public function register(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|min:5|max:255',
-            'avatar' => 'image|mimes:jpg,png,jpeg|max:5120',
-            'phone' => 'required|string|min:8|max:15|unique:users',
-            'email' => 'required|string|email|min:8|max:50|unique:users',
-            'password' => 'required|string|min:5|confirmed',
-            'gender' => 'required|string',
-        ]);
-
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-
-        if($request->hasFile('avatar')){
-            $avatar = $request->file('avatar')->store('avatars');
-
-            $user = User::create([
-                'name' => $request->get('name'),
-                'phone' => $request->get('phone'),
-                'email' => $request->get('email'),
-                'gender' => $request->get('gender'),
-                'password' => Hash::make($request->get('password')),
-                'avatar' => 'storage/'.$avatar,
-            ]);
-        }elseif( $request->get('avatar') == null ){
-            $user = User::create([
-                'name' => $request->get('name'),
-                'phone' => $request->get('phone'),
-                'email' => $request->get('email'),
-                'gender' => $request->get('gender'),
-                'password' => Hash::make($request->get('password')),
-                ]);
-        }
-
-        $data = collect($user);
-        $sent = $data->except('id', 'updated_at', 'created_at', 'email_verified_at');
-
-        return response()->json($sent, 201);
     }
 
     public function getAuthenticatedUser()
