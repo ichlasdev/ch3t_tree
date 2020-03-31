@@ -17,9 +17,11 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', 'UserController@register');
 Route::post('/login', 'UserController@login');
 
+Route::group(['middleware' => 'jwt.verify'], function () {
     Route::get('/user', 'UserController@getAuthenticatedUser');
     Route::post('/search', 'UserController@search');
     Route::post('/logout', 'UserController@logout');
     Route::get('/alluser', 'UserController@allUsers');
     Route::delete('/delete/{id}','UserController@destroy');
     Route::put('/update','UserController@update');
+});
