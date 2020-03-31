@@ -66,7 +66,7 @@ class UserController extends Controller
         $data = collect($user);
         $sent = $data->except('id', 'updated_at', 'created_at', 'email_verified_at');
 
-        return response()->json($sent, 201);
+        return response()->json(['data' => $sent], 201);
     }
 
     public function update(Request $request)
@@ -85,6 +85,7 @@ class UserController extends Controller
         }
 
         $user = User::findOrFail(Auth::id());
+
         if($request->hasFile('avatar')){
             if($request->file('avatar')->isValid()){
                 $avatar = base64_encode(file_get_contents($request->file('avatar')));
@@ -151,7 +152,7 @@ class UserController extends Controller
         }
 
         $data = collect($user);
-        $sent = $data->except('id', 'updated_at', 'created_at', 'email_verified_at');
+        $sent = $data->except('updated_at', 'created_at', 'email_verified_at');
 
         return response()->json(compact('sent'));
     }
