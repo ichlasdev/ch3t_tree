@@ -20,6 +20,7 @@ Route::post('/login', 'UserController@login');
 Route::group(['middleware' => 'jwt.verify'], function () {
     Route::get('/user', 'UserController@getAuthenticatedUser');
     Route::post('/search', 'ContactController@search');
+    Route::post('/addfriend', 'ContactController@addFriend');
     Route::post('/logout', 'UserController@logout');
     Route::get('/alluser', 'UserController@allUsers');
     Route::delete('/delete/{id}','UserController@destroy');

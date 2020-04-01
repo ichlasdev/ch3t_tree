@@ -14,7 +14,7 @@ class ContactController extends Controller
 
     public function dashboard()
     {
-        
+
     }
 
     public function addFriend(Request $request)
@@ -35,6 +35,8 @@ class ContactController extends Controller
             'host' => $host,
             'friends' => $contact,
         ]);
+
+        return response()->json(['friend' => $friend], 201);
     }
 
     public function deleteFriend()
