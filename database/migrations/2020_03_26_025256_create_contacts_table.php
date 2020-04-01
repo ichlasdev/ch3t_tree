@@ -18,7 +18,7 @@ class CreateContactsTable extends Migration
             $table->unsignedBigInteger('host');
             $table->foreign('host')->references('id')->on('users')->onDelete('cascade');
             $table->bigInteger('friends')->nullable()->unique();
-            $table->boolean('is_online');
+            $table->boolean('is_online')->default(0);
             $table->timestamps();
         });
     }

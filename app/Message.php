@@ -14,4 +14,9 @@ class Message extends Model
     {
         return $this->belongsTo(Contact::class);
     }
+
+    public function users()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

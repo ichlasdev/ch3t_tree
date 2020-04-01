@@ -181,27 +181,4 @@ class UserController extends Controller
         }
     }
 
-    public function search(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'cari' => 'required|string',
-        ]);
-
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
-        }
-
-        $cari = $request->get('cari');
-
-        $user = DB::table('users')
-        ->where('name','like',"%".$cari."%")
-        ->first(['name', 'avatar']);
-
-        if( $user == null ){
-            return response(['msg' => 'not found'], 204);
-        }
-
-        return response()->json($user, 302);
-    }
-
 }
