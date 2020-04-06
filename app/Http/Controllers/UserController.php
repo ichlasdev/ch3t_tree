@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use JWTAuth;
 use App\User;
-use App\Http\Controllers\Cookie;
-use App\Http\Resources\UserResource;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class UserController extends Controller
 {
@@ -95,7 +92,7 @@ class UserController extends Controller
                     'email' => $request->get('email'),
                     'gender' => $request->get('gender'),
                     'password' => Hash::make($request->get('password')),
-                    'avatar' => $avatar,
+                    'avatar' => base64_decode($avatar),
                 ]);
             }
         }elseif( $request->get('avatar') == null ){
@@ -155,6 +152,18 @@ class UserController extends Controller
         $sent = $data->except('updated_at', 'created_at', 'email_verified_at');
 
         return response()->json(compact('sent'));
+    }
+
+    public function userOnlineStatus()
+    {
+        $users = User::all();
+
+        foreach ($users as $user) {
+            if(Cache::has('user-is-online-' . $user->id))
+            echo $user->name . ' is online. Last Seen: '. Carbon::parse($user->last_seen)->diffForHumans() . " <br>";
+            else
+            echo $user->name . ' is offline. Last Seen: '. Carbon::parse($user->last_seen)->diffForHumans() . " <br>";
+        }
     }
 
     public function logout()
