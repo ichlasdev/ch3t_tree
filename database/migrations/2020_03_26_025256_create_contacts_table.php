@@ -16,9 +16,7 @@ class CreateContactsTable extends Migration
         Schema::create('contact', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('host');
-            $table->foreign('host')->references('id')->on('users')->onDelete('cascade');
             $table->bigInteger('friends')->nullable()->unique();
-            $table->boolean('is_online')->default(0);
             $table->timestamps();
         });
     }

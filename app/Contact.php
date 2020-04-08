@@ -10,7 +10,7 @@ class Contact extends Model
     protected $table = 'contact';
 
     protected $fillable = [
-        'host', 'friends', 'is_online'
+        'host', 'friends'
     ];
 
     public function user()

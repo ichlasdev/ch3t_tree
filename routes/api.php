@@ -14,21 +14,29 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/register', 'UserController@register');
-Route::post('/login', 'UserController@login');
+Route::post('/register', 'UserController@register')->name('apiregister');
+Route::post('/login', 'UserController@login')->name('apilogin');
 
 Route::group(['middleware' => 'jwt.verify'], function () {
-    Route::get('/user', 'UserController@getAuthenticatedUser');
-    Route::post('/logout', 'UserController@logout');
-    Route::get('/alluser', 'UserController@allUsers');
-    Route::delete('/delete/{id}','UserController@destroy');
-    Route::put('/update','UserController@update');
+    Route::get('/profil', 'UserController@getAuthenticatedUser')->name('profil');
+    Route::post('/logout', 'UserController@logout')->name('apilogout');
+    Route::get('/alluser', 'UserController@allUsers')->name('apigetuser');
+    Route::post('/restatus', 'UserController@isOnline')->name('isonline');
+    Route::delete('/delete/{id}','UserController@destroy')->name('apideluser');
+    Route::put('/update','UserController@update')->name('apiupuser');
 });
 
 Route::group(['middleware' => 'jwt.verify'], function () {
-    Route::get('/dashboard', 'ContactController@dashboard');
-    Route::get('/contact/search', 'ContactController@search');
-    Route::post('/contact/restatus', 'ContactController@isOnline');
-    Route::post('/contact/addfriend', 'ContactController@addFriend');
-    Route::delete('/contact/delfriend', 'ContactController@deleteFriend');
+    Route::get('/dashboard', 'ContactController@dashboard')->name('dashboard');
+    Route::get('/contact/search', 'ContactController@search')->name('search');
+    Route::post('/contact/addfriend', 'ContactController@addFriend')->name('addfriend');
+    Route::delete('/contact/delfriend', 'ContactController@deleteFriend')->name('delfriend');
+});
+
+Route::group(['middleware' => 'jwt.verify'], function () {
+    Route::get('/message/{friend_id}', 'MessageController@showMessage')->name('showmessage');
+    Route::get('/message/send/{friend_id}', 'MessageController@sendMessage')->name('sendmessage');
+    Route::get('/message/del/{msg_id}', 'MessageController@delMessage')->name('delmessage');
+    Route::get('/message/edit/{msg_id}', 'MessageController@editMessage')->name('upmessage');
+    Route::get('/message/read/{msg_id}', 'MessageController@isRead')->name('isread');
 });

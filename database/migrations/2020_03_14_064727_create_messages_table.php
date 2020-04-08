@@ -16,7 +16,6 @@ class CreateMessagesTable extends Migration
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('from_id');
-            $table->foreign('from_id')->references('id')->on('users')->onDelete('cascade');
             $table->bigInteger('to_id');
             $table->text('content');
             $table->boolean('is_read')->default(false);

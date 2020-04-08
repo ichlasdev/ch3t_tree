@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Contact;
 use JWTAuth;
 use App\User;
 use Carbon\Carbon;
@@ -31,7 +32,7 @@ class UserController extends Controller
             'phone' => 'required|string|min:8|max:15|unique:users',
             'email' => 'required|string|email|min:8|max:50|unique:users',
             'password' => 'required|string|min:5|confirmed',
-            'gender' => 'required|string',
+            'gender' => 'required|alpha|max:1',
         ]);
 
         if($validator->fails()){
@@ -70,11 +71,11 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:5|max:255',
-            'avatar' => 'image|mimes:jpg,png,jpeg',
-            'phone' => 'required|string|min:8|max:15',
-            'email' => 'required|string|email|min:8|max:50',
+            'avatar' => 'image|mimes:jpg,png,jpeg|max:4096',
+            'phone' => 'required|string|min:8|max:15|unique:users',
+            'email' => 'required|string|email|min:8|max:50|unique:users',
             'password' => 'required|string|min:5|confirmed',
-            'gender' => 'required|string',
+            'gender' => 'required|alpha|max:1',
         ]);
 
         if($validator->fails()){
@@ -188,6 +189,36 @@ class UserController extends Controller
                 'message' => 'Anu~~ Usernya gak bisa logout itu...'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public function isOnline(Request $request)
+    {
+        $validator = Validator::make($request->all(),[
+            'status' => 'required|string',
+        ]);
+
+        if($validator->fails()){
+            return response()->Json($validator->errors()->toJson(), 400);
+        }
+
+        $user = User::findOrFail(Auth::id());
+        $contact = Contact::all()->toArray();
+        dd($contact);
+
+        $status = $request->get('status');
+
+        if( $status == 'online' ){
+            $user->update([
+                'is_online' => 1
+            ]);
+            return response()->json(['msg' => 'status changed to online'], 200);
+        }elseif( $status == 'offline'){
+            $user->update([
+                'is_online' => 0
+            ]);
+            return response()->json(['msg' => 'status changed to offline'], 200);
+        }
+
     }
 
 }
