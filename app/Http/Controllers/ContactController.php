@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Contact;
-use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -19,8 +17,11 @@ class ContactController extends Controller
         ->where('host',Auth::id())
         ->join('users', 'users.id', '=', 'contact.friends')
         ->select('users.id','name')
-        ->get();
+        ->get()->toArray();
 
+        if ( $contact == null ){
+            return response()->json(['msg' => 'no friend found. even a single one! poor you boy~']);
+        }
         return response()->json($contact);
     }
 
@@ -35,9 +36,31 @@ class ContactController extends Controller
         }
 
         $host = Auth::id();
+        $friend = $request->get('id');
+
+        $test1 = DB::table('contact')
+        ->where('host', Auth::id())->where('friends','like', '%'.$friend.'%')
+        ->first('friends');
+        $collection = collect($test1)->contains($friend);
+        $test2 = DB::table('users')
+        ->where('id','like', '%'.$friend.'%')
+        ->get('id')->toArray();
+
+        if( $collection == true){
+            return response()->json(['msg' => 'friend already added'], 400);
+        }elseif( $host == (int)$friend){
+            return response()->json(['msg' => 'you cant added yourself as friend.. poor of you, buddy~'], 400);
+        }elseif( $test2 == null ){
+            return response()->json(['msg' => 'theres no users with that id.. Damn!'], 400);
+        }
+
         Contact::create([
             'host' => $host,
             'friends' => $request->get('id'),
+        ]);
+        Contact::create([
+            'host' => $request->get('id'),
+            'friends' => $host,
         ]);
 
         return response()->json(['msg' => 'friend added'], 201);
@@ -54,15 +77,19 @@ class ContactController extends Controller
         }
 
         $friend = $request->get('friend_id');
+        $test = Contact::all()
+        ->where('friends', $friend)->where('host', Auth::id())
+        ->toArray();
+        if ($test == null){
+            abort(401);
+        }
 
-        // $cek = DB::table('contact')->pluck('id');
-        // foreach($cek as $c){
-        //     if ( $friend != $c){
-        //         return response(['msg' => 'contact is not exist'], 400);
-        //     }
-        // }
         DB::table('contact')
-        ->where('friends', '=', $friend)
+        ->where('friends', $friend)->where('host', Auth::id())
+        ->delete();
+
+        DB::table('contact')
+        ->where('host', $friend)->where('friends', Auth::id())
         ->delete();
 
         return response(['msg' => 'contact deleted'], 200);
