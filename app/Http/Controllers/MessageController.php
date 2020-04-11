@@ -15,9 +15,10 @@ class MessageController extends Controller
     {
         $user = Auth::id();
 
-        $msg = Message::collect($user)
-        ->all()
-        ->users();
+        $msg = DB::table('messages')
+        ->where('from_id', $user)->where('to_id',$friend_id)
+        ->where('from_id', $friend_id)->where('to_id',$user)
+        ->get();
 
         dd($msg);
     }
@@ -31,8 +32,13 @@ class MessageController extends Controller
         if($validator->fails()){
             return response()->json($validator->errors()->toJson(), 400);
         }
-
+        dd($request->get('content'));
         $host = Auth::id();
+        $test1 = DB::table('contact')
+        ->where('host', Auth::id())->where('friends','like', '%'.$friend_id.'%')
+        ->first('friends');
+        $collection = collect($test1)->contains($friend_id);
+
 
         $msg = Message::create([
             'from_id' => $host,

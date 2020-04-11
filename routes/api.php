@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', 'UserController@register')->name('apiregister');
 Route::post('/login', 'UserController@login')->name('apilogin');
 
-Route::group(['middleware' => 'jwt.verify'], function () {
+Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/profil', 'UserController@getAuthenticatedUser')->name('profil');
     Route::post('/logout', 'UserController@logout')->name('apilogout');
     Route::get('/alluser', 'UserController@allUsers')->name('apigetuser');
@@ -26,14 +26,14 @@ Route::group(['middleware' => 'jwt.verify'], function () {
     Route::put('/update','UserController@update')->name('apiupuser');
 });
 
-Route::group(['middleware' => 'jwt.verify'], function () {
+Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/dashboard', 'ContactController@dashboard')->name('dashboard');
     Route::get('/contact/search', 'ContactController@search')->name('search');
     Route::post('/contact/addfriend', 'ContactController@addFriend')->name('addfriend');
     Route::delete('/contact/delfriend', 'ContactController@deleteFriend')->name('delfriend');
 });
 
-Route::group(['middleware' => 'jwt.verify'], function () {
+Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/message/{friend_id}', 'MessageController@showMessage')->name('showmessage');
     Route::get('/message/send/{friend_id}', 'MessageController@sendMessage')->name('sendmessage');
     Route::get('/message/del/{msg_id}', 'MessageController@delMessage')->name('delmessage');

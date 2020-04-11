@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Contact;
 use JWTAuth;
 use App\User;
+use App\Contact;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\UserResource;
@@ -124,35 +125,20 @@ class UserController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        try {
-            if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'invalid_credentials'], 400);
-            }
-        } catch (JWTException $e) {
-            return response()->json(['error' => 'could_not_create_token'], 500);
+        if(Auth::attempt($credentials)){
+            $user = Auth::user();
+            $token =  $user->createToken('MyApp')-> accessToken;
+            return response()->json(['success' => $token], 200);
         }
-
-        return response()->json(compact('token'));
+        else{
+            return response()->json(['error'=>'Unauthorised'], 401);
+        }
     }
 
     public function getAuthenticatedUser()
     {
-        try {
-            if (! $user = JWTAuth::parseToken()->authenticate()) {
-                return response()->json(['user_not_found'], 404);
-            }
-        } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
-            return response()->json(['token_expired'], $e->getStatusCode());
-        } catch (Tymon\JWTAuth\Exceptions\TokenInvalideException $e) {
-            return response()->json(['token_invalid'], $e->getStatusCode());
-        } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
-            return response()->json(['token_absent'], $e->getStatusCode());
-        }
-
-        $data = collect($user);
-        $sent = $data->except('updated_at', 'created_at', 'email_verified_at');
-
-        return response()->json(compact('sent'));
+        $user = Auth::user();
+        return response()->json(['user' => $user], 200);
     }
 
     public function userOnlineStatus()
