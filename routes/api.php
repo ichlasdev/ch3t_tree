@@ -35,8 +35,8 @@ Route::group(['middleware' => 'jwt.verify'], function () {
 
 Route::group(['middleware' => 'jwt.verify'], function () {
     Route::get('/message/{friend_id}', 'MessageController@showMessage')->name('showmessage');
-    Route::get('/message/send/{friend_id}', 'MessageController@sendMessage')->name('sendmessage');
-    Route::get('/message/del/{msg_id}', 'MessageController@delMessage')->name('delmessage');
-    Route::get('/message/edit/{msg_id}', 'MessageController@editMessage')->name('upmessage');
+    Route::post('/message/send/{friend_id}', 'MessageController@sendMessage')->name('sendmessage');
+    Route::delete('/message/del/{friend_id}', 'MessageController@delMessage')->name('delmessage');
+    Route::put('/message/edit/{msg_id}', 'MessageController@editMessage')->name('upmessage');
     Route::get('/message/read/{msg_id}', 'MessageController@isRead')->name('isread');
 });

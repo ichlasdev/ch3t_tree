@@ -139,24 +139,22 @@ class UserController extends Controller
     public function getAuthenticatedUser()
     {
         try {
-
             if (! $user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json(['user_not_found'], 404);
             }
-
         } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
-
             return response()->json(['token_expired'], $e->getStatusCode());
-
         } catch (Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
-
             return response()->json(['token_invalid'], $e->getStatusCode());
-
         } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
-
             return response()->json(['token_absent'], $e->getStatusCode());
         }
-    }
+
+        $data = collect($user);
+        $sent = $data->except('id', 'updated_at', 'created_at', 'email_verified_at');
+
+        return response()->json(['data' => $sent], Response::HTTP_ACCEPTED);
+        }
 
     public function userOnlineStatus()
     {
@@ -205,8 +203,6 @@ class UserController extends Controller
         }
 
         $user = User::findOrFail(Auth::id());
-        $contact = Contact::all()->toArray();
-        dd($contact);
 
         $status = $request->get('status');
 

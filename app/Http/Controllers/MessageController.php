@@ -15,12 +15,20 @@ class MessageController extends Controller
     {
         $user = Auth::id();
 
-        $msg = DB::table('messages')
-        ->where('from_id', $user)->where('to_id',$friend_id)
-        ->where('from_id', $friend_id)->where('to_id',$user)
-        ->get();
+        $test = DB::table('contact')
+        ->where('host', Auth::id())->where('friends','like', '%'.$friend_id.'%')
+        ->first('friends');
+        $collection = collect($test)->contains($friend_id);
+        if( $collection == false ){
+            return response()->json(['msg' => 'not a friend'], 401);
+        }
 
-        dd($msg);
+        $msg = DB::table('messages')
+        ->where('from_id', $user)->where('to_id', $friend_id)
+        ->orWhere('from_id', $friend_id)->where('to_id', $user)
+        ->orderBy('created_at', 'asc')->get();
+
+        return response()->json($msg, 200);
     }
 
     public function sendMessage(Request $request, $friend_id)
@@ -32,13 +40,16 @@ class MessageController extends Controller
         if($validator->fails()){
             return response()->json($validator->errors()->toJson(), 400);
         }
-        dd($request->get('content'));
+
         $host = Auth::id();
-        $test1 = DB::table('contact')
+
+        $test = DB::table('contact')
         ->where('host', Auth::id())->where('friends','like', '%'.$friend_id.'%')
         ->first('friends');
-        $collection = collect($test1)->contains($friend_id);
-
+        $collection = collect($test)->contains($friend_id);
+        if( $collection == false ){
+            abort(401);
+        }
 
         $msg = Message::create([
             'from_id' => $host,
@@ -46,7 +57,9 @@ class MessageController extends Controller
             'content' => $request->get('content')
         ]);
 
-        return response()->json(['message' => $msg], 200);
+        $data = collect($msg);
+        $sent = $data->except('id', 'updated_at');
+        return response()->json(['msg' => $sent], 200);
     }
 
     public function editMessage(Request $request, $msg_id)
@@ -87,8 +100,26 @@ class MessageController extends Controller
         return response(['msg' => 'Status updated'], Response::HTTP_CONTINUE);
     }
 
-    public function deleteMessage($msg_id)
+    public function deleteMessage(Request $request)
     {
+        $validator = Validator::make($request->all(),[
+            'msg_id' => 'required|numeric',
+        ]);
+
+        if($validator->fails()){
+            return response()->Json($validator->errors()->toJson(), 400);
+        }
+
+        $msg_id = $request->get('msg_id');
+        $user = Auth::id();
+
+        $test = DB::table('messages')
+        ->where('id', $msg_id)->where('from_id', $user)
+        ->get();
+        if( $test == null ){
+            return response()->json(['msg' => 'cannot delete message'], 400);
+        }
+
         $data = Message::findOrFail($msg_id);
         $data->delete();
 

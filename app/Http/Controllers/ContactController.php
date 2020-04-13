@@ -28,7 +28,7 @@ class ContactController extends Controller
     public function addFriend(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id' => 'required|numeric'
+            'friend_id' => 'required|numeric'
         ]);
 
         if($validator->fails()){
@@ -36,7 +36,7 @@ class ContactController extends Controller
         }
 
         $host = Auth::id();
-        $friend = $request->get('id');
+        $friend = $request->get('friend_id');
 
         $test1 = DB::table('contact')
         ->where('host', Auth::id())->where('friends','like', '%'.$friend.'%')
@@ -56,10 +56,10 @@ class ContactController extends Controller
 
         Contact::create([
             'host' => $host,
-            'friends' => $request->get('id'),
+            'friends' => $request->get('friend_id'),
         ]);
         Contact::create([
-            'host' => $request->get('id'),
+            'host' => $request->get('friend_id'),
             'friends' => $host,
         ]);
 
