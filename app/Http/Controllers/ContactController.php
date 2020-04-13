@@ -16,7 +16,7 @@ class ContactController extends Controller
         $contact = DB::table('contact')
         ->where('host',Auth::id())
         ->join('users', 'users.id', '=', 'contact.friends')
-        ->select('users.id','name')
+        ->select('users.id','name', 'is_online')
         ->get()->toArray();
 
         if ( $contact == null ){

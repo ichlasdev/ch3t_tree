@@ -115,7 +115,7 @@ class MessageController extends Controller
 
         $test = DB::table('messages')
         ->where('id', $msg_id)->where('from_id', $user)
-        ->get();
+        ->get()->toArray();
         if( $test == null ){
             return response()->json(['msg' => 'cannot delete message'], 400);
         }
