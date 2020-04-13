@@ -19,12 +19,6 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 class UserController extends Controller
 {
 
-    public function allUsers()
-    {
-        $data = User::all();
-        return UserResource::collection($data);
-    }
-
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -113,12 +107,12 @@ class UserController extends Controller
         return response()->json(['data' => $sent], Response::HTTP_ACCEPTED);
     }
 
-    public function destroy($id)
+    public function destroy()
     {
-        $data = User::findOrFail($id);
+        $data = User::findOrFail(Auth::id());
         $data->delete();
 
-        return redirect('/');
+        return response()->json(['msg' => 'user deleted'], 200);
     }
 
     public function login(Request $request)
