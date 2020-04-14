@@ -22,7 +22,6 @@ class CreateUsersTable extends Migration
             $table->enum('gender', ['M','F']);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->timestamp('last_seen')->nullable();
             $table->boolean('is_online')->default(0);
             $table->rememberToken();
             $table->timestamps();
