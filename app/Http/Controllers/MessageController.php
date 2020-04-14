@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Message;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -72,32 +72,32 @@ class MessageController extends Controller
             return response()->json($validator->errors()->toJson(), 400);
         }
 
-        $message = Message::findOrFail($msg_id);
+        $message = DB::table('messages')->where('id', $msg_id)->where('from_id', Auth::id());
+
+        $test = $message->get()->toArray();
+        if( $test == null ){
+            return response()->json(['msg' => 'cannot edit message'], 400);
+        }
+
         $message->update([
             'content' => $request->get('content')
         ]);
 
-        return response()->json(['message' => $message], 200);
+        return response()->json(['message' => $message->first('content')], 200);
     }
 
-    public function isRead(Request $request, $msg_id)
+    public function isRead($friend_id)
     {
-        $validator = Validator::make($request->all(),[
-            'read' => 'required|boolean',
-        ]);
+        $user = DB::table('messages')->where('from_id', Auth::id())->where('to_id', $friend_id);
 
-        if($validator->fails()){
-            return response()->Json($validator->errors()->toJson(), 400);
+        $test = $user->get()->toArray();
+        if( $test == null ){
+            return response()->json(['msg' => 'cannot change content status'], 400);
         }
 
-        $user = Message::findOrFail($msg_id);
-        $read = $request->first('read');
+        $user->update(['is_read' => 1]);
 
-        $user->update([
-            'is_read' => $read
-        ]);
-
-        return response(['msg' => 'Status updated'], Response::HTTP_CONTINUE);
+        return response()->json(['msg' => 'content status is readed'], 200);
     }
 
     public function deleteMessage(Request $request)
