@@ -21,7 +21,7 @@ Route::group(['middleware' => 'jwt.verify'], function () {
     Route::get('/profil', 'UserController@getAuthenticatedUser')->name('profil');
     Route::post('/logout', 'UserController@logout')->name('apilogout');
     Route::post('/restatus', 'UserController@isOnline')->name('isonline');
-    Route::delete('/delete','UserController@destroy')->name('apideluser');
+    // Route::delete('/delete','UserController@destroy')->name('apideluser');
     Route::put('/update','UserController@update')->name('apiupuser');
 });
 
