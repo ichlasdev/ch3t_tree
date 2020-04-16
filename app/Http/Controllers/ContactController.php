@@ -13,6 +13,8 @@ class ContactController extends Controller
 
     public function dashboard()
     {
+        $user = Auth::user('name','is_online');
+
         $contact = DB::table('contact')
         ->where('host',Auth::id())
         ->join('users', 'users.id', '=', 'contact.friends')
@@ -20,9 +22,9 @@ class ContactController extends Controller
         ->get()->toArray();
 
         if ( $contact == null ){
-            return response()->json(['msg' => 'no friend found. even a single one! poor you boy~']);
+            return response()->json(['msg' => 'no friend found']);
         }
-        return response()->json($contact);
+        return response()->json(['user' => $user, 'contact' => $contact]);
     }
 
     public function addFriend(Request $request)
