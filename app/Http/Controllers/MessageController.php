@@ -88,7 +88,7 @@ class MessageController extends Controller
 
     public function isRead($friend_id)
     {
-        $user = DB::table('messages')->where('from_id', Auth::id())->where('to_id', $friend_id);
+        $user = DB::table('messages')->where('from_id', $friend_id)->where('to_id', Auth::id());
 
         $test = $user->get()->toArray();
         if( $test == null ){
