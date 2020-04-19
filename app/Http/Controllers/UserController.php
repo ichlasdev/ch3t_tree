@@ -62,7 +62,6 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'string|min:5|max:255',
-            'avatar' => 'image|mimes:jpg,png,jpeg|max:4096',
             'phone' => 'string|min:8|max:15',
             'email' => 'string|email|min:8|max:50',
             'password' => 'string|min:5|confirmed',
