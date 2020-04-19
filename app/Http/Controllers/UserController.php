@@ -61,12 +61,12 @@ class UserController extends Controller
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|min:5|max:255',
+            'name' => 'string|min:5|max:255',
             'avatar' => 'image|mimes:jpg,png,jpeg|max:4096',
-            'phone' => 'required|string|min:8|max:15',
-            'email' => 'required|string|email|min:8|max:50',
-            'password' => 'required|string|min:5|confirmed',
-            'gender' => 'required|alpha|max:1',
+            'phone' => 'string|min:8|max:15',
+            'email' => 'string|email|min:8|max:50',
+            'password' => 'string|min:5|confirmed',
+            'gender' => 'alpha|max:1',
         ]);
 
         if($validator->fails()){
