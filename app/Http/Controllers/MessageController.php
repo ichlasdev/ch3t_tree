@@ -28,6 +28,10 @@ class MessageController extends Controller
         ->orWhere('from_id', $friend_id)->where('to_id', $user)
         ->orderBy('created_at', 'asc')->get();
 
+        if($msg->toArray() == null){
+            return response()->json(['msg' => 'no messages'], 200);
+        }
+
         return response()->json($msg, 200);
     }
 
