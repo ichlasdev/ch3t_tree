@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Contact;
+use App\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -85,7 +86,7 @@ class ContactController extends Controller
         if ($test == null){
             abort(401);
         }
-        dd(DB::table('messages')->select());
+        dd(Message::all()->toArray());
         DB::table('contact')
         ->where('friends', $friend)->where('host', Auth::id())
         ->delete();
