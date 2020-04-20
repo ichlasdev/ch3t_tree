@@ -85,7 +85,7 @@ class ContactController extends Controller
         if ($test == null){
             abort(401);
         }
-
+        dd(DB::table('messages')->select());
         DB::table('contact')
         ->where('friends', $friend)->where('host', Auth::id())
         ->delete();
@@ -94,6 +94,7 @@ class ContactController extends Controller
         ->where('host', $friend)->where('friends', Auth::id())
         ->delete();
 
+        dd(DB::table('messages')->select());
         DB::table('messaages')
         ->where('from_id', $friend)->where('to_id', Auth::id())
         ->delete();
