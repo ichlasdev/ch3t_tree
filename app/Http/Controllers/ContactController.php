@@ -80,10 +80,10 @@ class ContactController extends Controller
         }
 
         $friend = $request->get('friend_id');
-        $debug = DB::table('messages')
-        ->where('from_id', $friend)->where('to_id', Auth::id())
-        ->orWhere('from_id', Auth::id())->where('to_id', $friend)
-        ->get()->toArray();
+        // $debug = DB::table('messages')
+        // ->where('from_id', $friend)->where('to_id', Auth::id())
+        // ->orWhere('from_id', Auth::id())->where('to_id', $friend)
+        // ->get()->toArray();
 
         $test = Contact::all()
         ->where('friends', $friend)->where('host', Auth::id())
@@ -100,15 +100,13 @@ class ContactController extends Controller
         ->where('host', $friend)->where('friends', Auth::id())
         ->delete();
 
-        if ( $debug ) {
-        DB::table('messaages')
+        DB::table('messages')
         ->where('from_id', $friend)->where('to_id', Auth::id())
         ->delete();
 
         DB::table('messages')
         ->where('from_id', Auth::id())->where('to_id', $friend)
         ->delete();
-        }
 
         return response(['msg' => 'contact deleted'], 200);
     }
