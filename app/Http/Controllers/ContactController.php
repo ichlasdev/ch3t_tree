@@ -87,7 +87,7 @@ class ContactController extends Controller
             abort(401);
         }
         if(Message::all()->toArray() == null){
-            dd(Message::all()->toArray());
+            echo 'ok';
         }
         DB::table('contact')
         ->where('friends', $friend)->where('host', Auth::id())
