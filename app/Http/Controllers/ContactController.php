@@ -86,7 +86,9 @@ class ContactController extends Controller
         if ($test == null){
             abort(401);
         }
-        dd(Message::all()->toArray());
+        if(Message::all()->toArray() == null){
+            dd(Message::all()->toArray());
+        }
         DB::table('contact')
         ->where('friends', $friend)->where('host', Auth::id())
         ->delete();
